@@ -5,6 +5,7 @@ from typing import Dict, Generator, Optional, Union
 import numpy as np
 import torch as th
 from gym import spaces
+from sage.domains.boxworld.spaces import JsonGraph
 
 try:
     # Check memory used by replay buffer when possible
@@ -299,7 +300,11 @@ class RolloutBuffer(BaseBuffer):
         self.reset()
 
     def reset(self) -> None:
-        self.observations = np.zeros((self.buffer_size, self.n_envs) + self.obs_shape, dtype=np.float32)
+        
+        if isinstance(self.observation_space, JsonGraph):
+            self.observations = np.zeros((self.buffer_size, self.n_envs) + self.obs_shape, dtype=np.object)
+        else:
+            self.observations = np.zeros((self.buffer_size, self.n_envs) + self.obs_shape, dtype=np.float32)
         self.actions = np.zeros((self.buffer_size, self.n_envs, self.action_dim), dtype=np.float32)
         self.rewards = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
         self.returns = np.zeros((self.buffer_size, self.n_envs), dtype=np.float32)
@@ -400,4 +405,9 @@ class RolloutBuffer(BaseBuffer):
             self.advantages[batch_inds].flatten(),
             self.returns[batch_inds].flatten(),
         )
-        return RolloutBufferSamples(*tuple(map(self.to_torch, data)))
+        
+        if isinstance(self.observation_space, JsonGraph):
+            return RolloutBufferSamples(data[0],*tuple(map(self.to_torch, data[1:])))
+        else:
+            return RolloutBufferSamples(*tuple(map(self.to_torch, data)))
+

@@ -6,6 +6,7 @@ import torch as th
 from gym import spaces
 from torch.nn import functional as F
 
+from sage.domains.boxworld.spaces import JsonGraph
 
 def is_image_space_channels_first(observation_space: spaces.Box) -> bool:
     """
@@ -61,7 +62,7 @@ def is_image_space(observation_space: spaces.Space, channels_last: bool = True, 
     return False
 
 
-def preprocess_obs(obs: th.Tensor, observation_space: spaces.Space, normalize_images: bool = True) -> th.Tensor:
+def preprocess_obs(obs: th.Tensor, device, observation_space: spaces.Space, normalize_images: bool = True) -> th.Tensor:
     """
     Preprocess observation to be to a neural network.
     For images, it normalizes the values by dividing them by 255 (to have values in [0, 1])
@@ -73,6 +74,13 @@ def preprocess_obs(obs: th.Tensor, observation_space: spaces.Space, normalize_im
         (True by default)
     :return:
     """
+    if isinstance(observation_space, JsonGraph):
+        converted_obs = observation_space.converter(obs)
+        converted_tensor = converted_obs.to(device)
+        return converted_tensor
+    else:
+        obs = th.as_tensor(obs).to(device)
+
     if isinstance(observation_space, spaces.Box):
         if is_image_space(observation_space) and normalize_images:
             return obs.float() / 255.0

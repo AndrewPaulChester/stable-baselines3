@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union, Tuple
 
 import torch as th
 from gym import spaces
@@ -75,6 +75,12 @@ class A2C(OnPolicyAlgorithm):
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
+        supported_action_spaces: Optional[Tuple[spaces.Space, ...]] = (
+            spaces.Box,
+            spaces.Discrete,
+            spaces.MultiDiscrete,
+            spaces.MultiBinary,
+        )
     ):
 
         super(A2C, self).__init__(
@@ -96,12 +102,7 @@ class A2C(OnPolicyAlgorithm):
             create_eval_env=create_eval_env,
             seed=seed,
             _init_setup_model=False,
-            supported_action_spaces=(
-                spaces.Box,
-                spaces.Discrete,
-                spaces.MultiDiscrete,
-                spaces.MultiBinary,
-            ),
+            supported_action_spaces=supported_action_spaces,
         )
 
         self.normalize_advantage = normalize_advantage
