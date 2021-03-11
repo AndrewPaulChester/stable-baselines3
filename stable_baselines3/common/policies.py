@@ -560,7 +560,7 @@ class ActorCriticPolicy(BasePolicy):
             for the actor, the value function and for gSDE function
         """
         # Preprocess the observation if needed
-        features = self.extract_features(obs)
+        features = self.extract_features(obs,self.device)
         latent_pi, latent_vf = self.mlp_extractor(features)
 
         # Features for sde
