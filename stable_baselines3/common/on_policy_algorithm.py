@@ -184,11 +184,14 @@ class OnPolicyAlgorithm(BaseAlgorithm):
             self._last_dones = dones
 
         with th.no_grad():
+            #Fixing episode timeout - only correct for num-steps = 1
+            true_obs = [[x['s_true']] for x in infos]
+            true_done = np.array([x['d_true'] for x in infos],dtype=np.bool)
             # Compute value for the last timestep
             #obs_tensor = th.as_tensor(new_obs).to(self.device)
-            _, values, _ = self.policy.forward(new_obs)
+            _, values, _ = self.policy.forward(true_obs)
 
-        rollout_buffer.compute_returns_and_advantage(last_values=values, dones=dones)
+        rollout_buffer.compute_returns_and_advantage(last_values=values, dones=true_done)
 
         callback.on_rollout_end()
 
