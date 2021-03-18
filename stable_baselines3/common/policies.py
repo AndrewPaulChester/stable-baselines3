@@ -117,7 +117,15 @@ class BaseModel(nn.Module, ABC):
         """
         assert self.features_extractor is not None, "No features extractor was set"
         preprocessed_obs = preprocess_obs(obs, device, self.observation_space, normalize_images=self.normalize_images)
-        return self.features_extractor(preprocessed_obs)
+        processed_obs = self.features_extractor(preprocessed_obs)
+        if th.isnan(processed_obs.x).any():
+            print("nan detected in node embeddings")
+            print(processed_obs.x)
+            print(preprocessed_obs.x)
+            print(self.features_extractor.parameters)
+        return processed_obs
+
+        
 
     def _get_constructor_parameters(self) -> Dict[str, Any]:
         """
