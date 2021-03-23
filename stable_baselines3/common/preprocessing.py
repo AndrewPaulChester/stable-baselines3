@@ -6,7 +6,7 @@ import torch as th
 from gym import spaces
 from torch.nn import functional as F
 
-from sage.domains.boxworld.spaces import JsonGraph
+from sage.domains.utils.spaces import JsonGraph
 
 def is_image_space_channels_first(observation_space: spaces.Box) -> bool:
     """

@@ -5,7 +5,7 @@ from typing import Dict, Generator, Optional, Union
 import numpy as np
 import torch as th
 from gym import spaces
-from sage.domains.boxworld.spaces import JsonGraph
+from sage.domains.utils.spaces import JsonGraph
 
 try:
     # Check memory used by replay buffer when possible
