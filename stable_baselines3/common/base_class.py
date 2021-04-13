@@ -635,6 +635,8 @@ class BaseAlgorithm(ABC):
         # load parameters
         model.__dict__.update(data)
         model.__dict__.update(kwargs)
+        if 'gnn_steps' in kwargs:
+            model.policy_kwargs['features_extractor_kwargs']['gnn_steps']=kwargs['gnn_steps']
         model._setup_model()
 
         # put state_dicts back in place
