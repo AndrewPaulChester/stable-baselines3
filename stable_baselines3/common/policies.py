@@ -9,6 +9,7 @@ import gym
 import numpy as np
 import torch as th
 from torch import nn
+from copy import deepcopy
 
 from stable_baselines3.common.distributions import (
     BernoulliDistribution,
@@ -116,14 +117,14 @@ class BaseModel(nn.Module, ABC):
         :return:
         """
         assert self.features_extractor is not None, "No features extractor was set"
-        preprocessed_obs = preprocess_obs(obs, device, self.observation_space, normalize_images=self.normalize_images)
-        processed_obs = self.features_extractor(preprocessed_obs)
+        preprocessed_obs = preprocess_obs(obs, device, self.observation_space, normalize_images=self.normalize_images) #this is the symbolic graph representation
+        processed_obs = self.features_extractor(deepcopy(preprocessed_obs)) #this is the embedded graph representation.
         if th.isnan(processed_obs.x).any():
             print("nan detected in node embeddings")
             print(processed_obs.x)
             print(preprocessed_obs.x)
             print(self.features_extractor.parameters)
-        return processed_obs
+        return processed_obs,preprocessed_obs #this second argument here is dangerous and will likely break a lot of code. Calling functions just need to ignore the second return value
 
         
 
