@@ -74,6 +74,7 @@ class A2C(OnPolicyAlgorithm):
         verbose: int = 0,
         seed: Optional[int] = None,
         device: Union[th.device, str] = "auto",
+        sample_entropy: bool = False,
         _init_setup_model: bool = True,
         supported_action_spaces: Optional[Tuple[spaces.Space, ...]] = (
             spaces.Box,
@@ -106,7 +107,7 @@ class A2C(OnPolicyAlgorithm):
         )
 
         self.normalize_advantage = normalize_advantage
-
+        self.sample_entropy = sample_entropy
         # Update optimizer inside the policy if we want to use RMSProp
         # (original implementation) rather than Adam
         if use_rms_prop and "optimizer_class" not in self.policy_kwargs:
@@ -148,7 +149,7 @@ class A2C(OnPolicyAlgorithm):
             value_loss = F.mse_loss(rollout_data.returns, values)
 
             # Entropy loss favor exploration
-            if entropy is None:
+            if entropy is None or self.sample_entropy:
                 # Approximate entropy when no analytical form
                 entropy_loss = -th.mean(-log_prob)
             else:
@@ -170,6 +171,7 @@ class A2C(OnPolicyAlgorithm):
         logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
         logger.record("train/explained_variance", explained_var)
         logger.record("train/entropy_loss", entropy_loss.item())
+        logger.record("train/entropy", entropy.item())
         logger.record("train/policy_loss", policy_loss.item())
         logger.record("train/value_loss", value_loss.item())
         if hasattr(self.policy, "log_std"):
