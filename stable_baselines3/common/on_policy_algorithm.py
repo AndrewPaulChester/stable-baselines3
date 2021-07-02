@@ -59,6 +59,7 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         gae_lambda: float,
         ent_coef: float,
         vf_coef: float,
+        policy_coef: float,
         max_grad_norm: float,
         use_sde: bool,
         sde_sample_freq: int,
@@ -95,6 +96,7 @@ class OnPolicyAlgorithm(BaseAlgorithm):
         self.gae_lambda = gae_lambda
         self.ent_coef = ent_coef
         self.vf_coef = vf_coef
+        self.policy_coef=policy_coef
         self.max_grad_norm = max_grad_norm
         self.rollout_buffer = None
 

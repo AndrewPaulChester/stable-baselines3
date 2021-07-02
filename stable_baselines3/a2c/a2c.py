@@ -62,6 +62,7 @@ class A2C(OnPolicyAlgorithm):
         gae_lambda: float = 1.0,
         ent_coef: float = 0.0,
         vf_coef: float = 0.5,
+        policy_coef: float = 1.0,
         max_grad_norm: float = 0.5,
         rms_prop_eps: float = 1e-5,
         use_rms_prop: bool = True,
@@ -93,6 +94,7 @@ class A2C(OnPolicyAlgorithm):
             gae_lambda=gae_lambda,
             ent_coef=ent_coef,
             vf_coef=vf_coef,
+            policy_coef=policy_coef,
             max_grad_norm=max_grad_norm,
             use_sde=use_sde,
             sde_sample_freq=sde_sample_freq,
@@ -155,7 +157,7 @@ class A2C(OnPolicyAlgorithm):
             else:
                 entropy_loss = -th.mean(entropy)
 
-            loss = policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
+            loss = self.policy_coef*policy_loss + self.ent_coef * entropy_loss + self.vf_coef * value_loss
 
             # Optimization step
             self.policy.optimizer.zero_grad()
