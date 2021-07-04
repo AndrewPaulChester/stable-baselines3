@@ -82,7 +82,8 @@ class A2C(OnPolicyAlgorithm):
             spaces.Discrete,
             spaces.MultiDiscrete,
             spaces.MultiBinary,
-        )
+        ),
+        **kwargs
     ):
 
         super(A2C, self).__init__(
